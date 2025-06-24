@@ -1,0 +1,38 @@
+name: Build CS16 Client (Android)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ✅ 1️⃣ Checkout
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # ✅ 2️⃣ Setup JDK (Gradle needs this!)
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # ✅ 3️⃣ Grant permission for Gradle script
+      - name: Grant execute permission
+        run: chmod +x android/gradlew
+
+      # ✅ 4️⃣ Build the debug version
+      - name: Build Debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      # ✅ 5️⃣ Upload the artifact
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
